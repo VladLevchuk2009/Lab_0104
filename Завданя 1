@@ -1,0 +1,125 @@
+using System.Text;
+class Element
+{
+    private int value { get; set; }
+
+    public Element(int value)
+    {
+        this.value = value;
+    }
+    public static Element operator +(Element a, Element b)
+    {
+        return new Element(a.value + b.value);
+    }
+    public static Element operator -(Element a, Element b)
+    {
+        return new Element(a.value - b.value);
+    }
+    public static Element operator *(Element a, Element b)
+    {
+        return new Element(a.value * b.value);
+    }
+    public static bool operator ==(Element a, Element b)
+    {
+        return a.value == b.value; ;
+    }
+    public static bool operator !=(Element a, Element b)
+    {
+        return !(a.value == b.value);
+    }
+    public override bool Equals(object obj)
+    {
+        if (obj == null || GetType() != obj.GetType())
+        {
+            return false;
+        }
+        return value == ((Element)obj).value;
+    }
+    public override int GetHashCode()
+    {
+        return value.GetHashCode();
+    }
+    public override string ToString()
+    {
+        return value.ToString();
+    }
+}
+
+abstract class Array
+{
+    protected Element[] array;
+
+    public abstract bool Equals(object obj);// порожні абстрактні методи
+    public abstract int GetHashCode();
+    public abstract string ToString();
+}
+
+class OneDimensionalArray : Array
+{
+    public OneDimensionalArray(int a)
+    {
+        this.array = new Element[a];
+    }
+    public override bool Equals(object obj)
+    {
+        if (obj == null || !(obj is OneDimensionalArray other))
+            return false;
+
+        if (array.Length != other.array.Length)
+            return false;
+
+        for (int i = 0; i < array.Length; i++)
+        {
+            if (array[i] != other.array[i])
+                return false;
+        }
+
+        return true;
+    }
+    public override int GetHashCode()
+    {
+        int hash = 17;
+        foreach (Element item in array)
+        {
+            hash = hash * 31 + item.GetHashCode();
+        }
+        return hash;
+    }
+    public override string ToString()
+    {
+        StringBuilder str = new StringBuilder(); //клас StringBuilder оптимізований для виконання багатьох операцій конкатенації рядків
+        foreach (Element item in array)
+        {
+            str.Append(item).Append("\t");
+        }
+        return str.ToString();
+    }
+    public Element this[int index]
+    {
+        get { return array[index]; }
+        set { array[index] = value; }
+    }
+}
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        OneDimensionalArray array1 = new OneDimensionalArray(5);
+        array1[0] = new Element(1);
+        array1[1] = new Element(1);
+        array1[2] = new Element(1);
+        array1[3] = new Element(2);
+        array1[4] = new Element(1);
+        OneDimensionalArray array2 = new OneDimensionalArray(5);
+        array2[0] = new Element(1);
+        array2[1] = new Element(1);
+        array2[2] = new Element(1);
+        array2[3] = new Element(1);
+        array2[4] = new Element(1);
+        Console.WriteLine($"Array1:\t{array1.ToString()}");
+        Console.WriteLine($"Array2:\t{array2.ToString()}");
+        Console.WriteLine($"Rusult of Equals:\t{array1.Equals(array2)}");
+        Console.WriteLine($"Rusult of array1.GetHashCode:\t{array1.GetHashCode()}");
+    }
+}
